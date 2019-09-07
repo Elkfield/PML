@@ -1,0 +1,90 @@
+---
+title: "Practical Maching Learning Coursera Assignment"
+author: "Erik Hirschfeld"
+date: "7 September 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This document is the research for the final assignment of the Coursera course Practical Machine Learning. In this document we research the question  how well people do their excercises given the information from fitness trackers.
+
+The ultimate goal is then to predict new data given from the course website.
+
+The document itself is created by using knitr and RStudio.
+
+```{r, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(data.table)
+library(caret)
+library(ranger)
+```
+
+## Loading the Data
+
+```{r, message = FALSE, cache = TRUE}
+# first load the data
+pth <- "C:/Users/Erik/Downloads/Practical Machine Learning/"
+train <- fread(paste0(pth, "pml-training.csv"), data.table = FALSE, stringsAsFactors = TRUE)
+test  <- fread(paste0(pth, "pml-testing.csv"), data.table = FALSE, stringsAsFactors = TRUE)
+```
+
+## Examine the data 
+
+First look at the data and the structure of the data:
+```{r, message = FALSE, cache = TRUE}
+summary(train)
+```
+
+We can see some columns which have all the information completly missing and other columns which are completly zero and do not have any variance. We want to drop these columns. 
+```{r, message = FALSE}
+drop_vars <- c("V1", "kurtosis_yaw_forearm", "skewness_yaw_forearm", "skewness_yaw_dumbbell", "kurtosis_yaw_dumbbell", "amplitude_yaw_belt",
+             	      "skewness_yaw_belt", "kurtosis_yaw_belt")
+```
+
+Next we are checking if there are more columns with many missing and drop them.
+```{r, message = FALSE}
+missing_features <- colSums(is.na(train))
+missing_features <- missing_features[missing_features > ncol(train) * 0.9]
+
+drop_vars <- unique(c(drop_vars, names(missing_features)))
+
+train %>%
+	select(-one_of(drop_vars)) ->
+	train
+
+test %>%
+	select(-one_of(drop_vars)) ->
+  test
+```
+
+
+## Modelling
+
+Now we are starting to model the data in a first try with Random Forests via the ranger package
+
+```{r, message = FALSE, cache = TRUE}
+train_control <- trainControl(method = "cv", number = 5)
+mdl_ranger_caret <- train(classe ~ ., data = train, trControl = train_control, 
+													method="ranger")
+mdl_ranger_caret
+```
+
+We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data.
+
+
+## Predicting new data
+
+```{r, message = FALSE, cache = TRUE}
+pred_test <- predict(mdl_ranger_caret, newdata = test)
+pred_test
+```
+
+## Conclusion
+
+After putting in the predicted values on the Coursera webpage we can see that all the predictions are correct. Given also all model statistics we can conclude that we have a good model to predict the classe variable, which gives the excercise quality.
