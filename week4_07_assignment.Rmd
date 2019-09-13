@@ -5,7 +5,7 @@ date: "7 September 2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE, cache = TRUE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -19,7 +19,7 @@ The document itself is created by using knitr and RStudio.
 
 ```{r, message = FALSE}
 library(tidyverse)
-library(ggplot2)
+#library(ggplot2)
 library(data.table)
 library(caret)
 library(ranger)
@@ -27,9 +27,9 @@ library(ranger)
 
 ## Loading the Data
 
-```{r, message = FALSE, cache = TRUE}
+```{r, message = FALSE}
 # first load the data
-pth <- "C:/Users/Erik/Downloads/Practical Machine Learning/"
+pth <- "D:/Online Courses/Coursera/Data Science Specialization/Practical Machine Learning/"
 train <- fread(paste0(pth, "pml-training.csv"), data.table = FALSE, stringsAsFactors = TRUE)
 test  <- fread(paste0(pth, "pml-testing.csv"), data.table = FALSE, stringsAsFactors = TRUE)
 ```
@@ -37,14 +37,13 @@ test  <- fread(paste0(pth, "pml-testing.csv"), data.table = FALSE, stringsAsFact
 ## Examine the data 
 
 First look at the data and the structure of the data:
-```{r, message = FALSE, cache = TRUE}
+```{r, message = FALSE, eval = FALSE}
 summary(train)
 ```
 
 We can see some columns which have all the information completly missing and other columns which are completly zero and do not have any variance. We want to drop these columns. 
 ```{r, message = FALSE}
-drop_vars <- c("V1", "kurtosis_yaw_forearm", "skewness_yaw_forearm", "skewness_yaw_dumbbell", "kurtosis_yaw_dumbbell", "amplitude_yaw_belt",
-             	      "skewness_yaw_belt", "kurtosis_yaw_belt")
+drop_vars <- c("V1", "kurtosis_yaw_forearm", "skewness_yaw_forearm", "skewness_yaw_dumbbell", "kurtosis_yaw_dumbbell", "amplitude_yaw_belt", "skewness_yaw_belt", "kurtosis_yaw_belt")
 ```
 
 Next we are checking if there are more columns with many missing and drop them.
@@ -66,25 +65,24 @@ test %>%
 
 ## Modelling
 
-Now we are starting to model the data in a first try with Random Forests via the ranger package
+Now we are starting to model the data in a first try with Random Forests via the ranger package. We start with a random forect model because normally random forest is a well performing model. The random forest method creates subsamples (e.g. 300) of the available data and columns and for each subset a decision tree is calculated. To get the final prediction the majority vote of the 300 trees are used. In case random forest will not work we good try other models like extreme gradient boosted trees.
 
-```{r, message = FALSE, cache = TRUE}
+```{r, message = FALSE}
 train_control <- trainControl(method = "cv", number = 5)
 mdl_ranger_caret <- train(classe ~ ., data = train, trControl = train_control, 
 													method="ranger")
 mdl_ranger_caret
 ```
 
-We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data.
-
+We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data. The final model selected is the mtry=41 with the gini split rule. Tis model has an accruacy of 99.9% on the k-fold cross validation, so the accruacy on the test data should be over 99%.
 
 ## Predicting new data
 
-```{r, message = FALSE, cache = TRUE}
+```{r, message = FALSE}
 pred_test <- predict(mdl_ranger_caret, newdata = test)
 pred_test
 ```
 
 ## Conclusion
 
-After putting in the predicted values on the Coursera webpage we can see that all the predictions are correct. Given also all model statistics we can conclude that we have a good model to predict the classe variable, which gives the excercise quality.
+After putting in the predicted values on the Coursera webpage we can see that all the predictions are correct. Given also all model statistics, especially the accruacy from the k-folf cross validation of over 99% we can conclude that we have a good model to predict the classe variable.
