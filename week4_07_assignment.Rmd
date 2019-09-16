@@ -74,7 +74,7 @@ mdl_ranger_caret <- train(classe ~ ., data = train, trControl = train_control,
 mdl_ranger_caret
 ```
 
-We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data. The final model selected is the mtry=41 with the gini split rule. Tis model has an accruacy of 99.9% on the k-fold cross validation, so the accruacy on the test data should be over 99%.
+We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data. The final model selected is the mtry=41 with the gini split rule. Tis model has an accruacy of 99.9% on the k-fold cross validation, so the accruacy on the test data should be around 99.9% and the error on the test set is expected to be around 0.1%. 
 
 ## Predicting new data
 

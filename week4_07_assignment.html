@@ -249,22 +249,22 @@ mdl_ranger_caret</code></pre>
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (5 fold) 
-## Summary of sample sizes: 15696, 15698, 15697, 15698, 15699 
+## Summary of sample sizes: 15697, 15699, 15697, 15696, 15699 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  splitrule   Accuracy   Kappa    
-##    2    gini        0.9905718  0.9880724
-##    2    extratrees  0.9659056  0.9568140
-##   41    gini        0.9993885  0.9992265
-##   41    extratrees  0.9989807  0.9987108
-##   80    gini        0.9990317  0.9987753
-##   80    extratrees  0.9988788  0.9985819
+##    2    gini        0.9907759  0.9883304
+##    2    extratrees  0.9670780  0.9583044
+##   41    gini        0.9995923  0.9994843
+##   41    extratrees  0.9987769  0.9984529
+##   80    gini        0.9991337  0.9989043
+##   80    extratrees  0.9988788  0.9985818
 ## 
 ## Tuning parameter 'min.node.size' was held constant at a value of 1
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final values used for the model were mtry = 41, splitrule = gini
 ##  and min.node.size = 1.</code></pre>
-<p>We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data. The final model selected is the mtry=41 with the gini split rule. Tis model has an accruacy of 99.9% on the k-fold cross validation, so the accruacy on the test data should be over 99%.</p>
+<p>We can already see that the accruacy is really good on the k-fold cross validation and we will use the model to predict our test data. The final model selected is the mtry=41 with the gini split rule. Tis model has an accruacy of 99.9% on the k-fold cross validation, so the accruacy on the test data should be around 99.9% and the error on the test set is expected to be around 0.1%.</p>
 </div>
 <div id="predicting-new-data" class="section level2">
 <h2>Predicting new data</h2>
